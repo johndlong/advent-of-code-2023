@@ -1,0 +1,14 @@
+linters:
+  enable-all: true
+  disable:
+    - wsl
+
+linters-settings:
+  depguard:
+    rules:
+      # Name of a rule.
+      main:
+        # List of allowed packages.
+        allow:
+          - $gostd
+          - github.com/johndlong/advent-of-code/2023/04/common

@@ -2,12 +2,22 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
+)
+
+var ErrUnsupportedColor = errors.New("unsupported color")
+
+const (
+	expectedRed   = 12
+	expectedGreen = 13
+	expectedBlue  = 14
 )
 
 type roll struct {
@@ -28,20 +38,20 @@ func processLine(line string) (game, error) {
 
 	gameNumInt, err := strconv.Atoi(gameMatch[1])
 	if err != nil {
-		return game{}, err
+		return game{}, fmt.Errorf("%w: failed converting game ID to int: %s", err, gameSeparators[0])
 	}
 
 	rollSeparators := strings.Split(gameSeparators[1], ";")
 	resultRegexp := regexp.MustCompile(`(\d+) (blue|red|green)`)
 	gameRolls := []roll{}
 	for _, rollStr := range rollSeparators {
-		gameRoll := roll{}
+		gameRoll := roll{red: 0, green: 0, blue: 0}
 		resultSeparators := strings.Split(rollStr, ",")
 		for _, result := range resultSeparators {
 			resultMatch := resultRegexp.FindStringSubmatch(result)
 			resultNumInt, err := strconv.Atoi(resultMatch[1])
 			if err != nil {
-				return game{}, err
+				return game{}, fmt.Errorf("%w: failed converting roll ID to int: %v", err, resultMatch[1])
 			}
 			switch color := resultMatch[2]; color {
 			case "blue":
@@ -51,7 +61,7 @@ func processLine(line string) (game, error) {
 			case "green":
 				gameRoll.green = resultNumInt
 			default:
-				return game{}, fmt.Errorf("unexpected color: %s", color)
+				return game{}, fmt.Errorf("%w: %s", ErrUnsupportedColor, color)
 			}
 		}
 		gameRolls = append(gameRolls, gameRoll)
@@ -66,6 +76,7 @@ func isGamePossible(gameTest game, desiredRoll roll) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -81,13 +92,15 @@ func main() {
 	for scanner.Scan() {
 		game, err := processLine(scanner.Text())
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			runtime.Goexit()
 		}
 		games = append(games, game)
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		runtime.Goexit()
 	}
 
 	possibleGames := []game{}
@@ -95,9 +108,9 @@ func main() {
 		if isGamePossible(
 			game,
 			roll{
-				red:   12,
-				green: 13,
-				blue:  14,
+				red:   expectedRed,
+				green: expectedGreen,
+				blue:  expectedBlue,
 			}) {
 			possibleGames = append(possibleGames, game)
 		}
@@ -108,5 +121,5 @@ func main() {
 		total += game.number
 	}
 
-	fmt.Printf("Result: %d", total)
+	log.Printf("Result: %d", total)
 }

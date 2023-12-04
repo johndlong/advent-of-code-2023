@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/johndlong/advent-of-code/2023/04/common"
@@ -18,5 +17,5 @@ func main() {
 		total += card.WinningTotal()
 	}
 
-	fmt.Printf("Result: %d", total)
+	log.Printf("Result: %d", total)
 }

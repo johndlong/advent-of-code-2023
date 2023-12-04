@@ -2,6 +2,7 @@ package common
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -23,9 +24,10 @@ func (c *Card) WinningTotal() int {
 	}
 	for _, number := range c.ActualNumbers {
 		if _, ok := winningNumbers[number]; ok {
-			retval += 1
+			retval++
 		}
 	}
+
 	return retval
 }
 
@@ -36,10 +38,11 @@ func getNumbers(sequence string) ([]int, error) {
 	for _, results := range resultMatch {
 		number, err := strconv.Atoi(results[0])
 		if err != nil {
-			return []int{}, err
+			return []int{}, fmt.Errorf("%w number to int: %s", err, results[0])
 		}
 		retval = append(retval, number)
 	}
+
 	return retval, nil
 }
 
@@ -64,6 +67,7 @@ func ProcessLines(path string) ([]Card, error) {
 		}
 		cards = append(cards, card)
 	}
+
 	return cards, nil
 }
 
@@ -74,7 +78,7 @@ func processLine(line string) (Card, error) {
 
 	gameNumInt, err := strconv.Atoi(gameMatch[1])
 	if err != nil {
-		return Card{}, err
+		return Card{}, fmt.Errorf("%w: card ID to int: %s", err, gameMatch[1])
 	}
 
 	separators := strings.Split(gameSeparators[1], "|")
