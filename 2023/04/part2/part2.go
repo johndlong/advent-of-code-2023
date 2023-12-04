@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/johndlong/advent-of-code-2023/04/common"
+	"github.com/johndlong/advent-of-code/2023/04/common"
 )
 
 func processCards(cards []common.Card) (int, error) {
