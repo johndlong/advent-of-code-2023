@@ -1,0 +1,8 @@
+[tool.black]
+line-length = 120
+target-version = ['py312']
+include = '\.pyi?$'
+
+[tool.pylint]
+max-line-length = 120
+ignore-patterns='(.)*_test\.py,test_(.)*\.py,2023\\03\\part1\.py'

@@ -1,6 +1,6 @@
+"""Advent of Code - Day 1 - Part 2"""
+
 import math
-import re
-import operator
 
 name_to_value = {
     1: 1,
@@ -25,10 +25,11 @@ name_to_value = {
 
 
 def get_value(line: str) -> int:
+    """Return the value extracted from the line."""
     name_to_index = dict.fromkeys(name_to_value.keys(), ())
-    for name in name_to_value.keys():
+    for name in name_to_value:
         fname = name
-        if type(name) == int:
+        if isinstance(name, int):
             fname = f"{name}"
         first = line.find(fname)
         last = line.rfind(fname)
@@ -52,6 +53,8 @@ def get_value(line: str) -> int:
 
 
 def get_sum(data: str) -> int:
+    """Return the sum of all the values extracted from the lines."""
+    # pylint: disable=duplicate-code
     total = 0
     for line in data.splitlines():
         total += get_value(line)
@@ -59,11 +62,13 @@ def get_sum(data: str) -> int:
 
 
 def main():
-    with open("01/part2.txt") as f:
+    """Main entrypoint."""
+    # pylint: disable=duplicate-code
+    with open("01/part2.txt", encoding="utf-8") as f:
         data = f.read()
 
-    sum = get_sum(data)
-    print(sum)
+    retval = get_sum(data)
+    print(retval)
 
 
 if __name__ == "__main__":

@@ -1,12 +1,11 @@
+# pylint: skip-file
 import unittest
 from main import Almanac, Range, process_range
 
 
 class TestDay5(unittest.TestCase):
     def setUp(self):
-        self.almanac = Almanac.process_input(
-            "2023/05/testdata/testdata.txt", seed_range=True
-        )
+        self.almanac = Almanac.process_input("2023/05/testdata/testdata.txt", seed_range=True)
 
     def test_process_range(self):
         source = (1, 1)
@@ -43,9 +42,7 @@ class TestDay5(unittest.TestCase):
 
         source = (2010168426, 158205686)
         dest = (1531317439, 615453278)
-        expected = Range(
-            within=(2010168426, 136602291), before=None, after=(2146770717, 21603395)
-        )
+        expected = Range(within=(2010168426, 136602291), before=None, after=(2146770717, 21603395))
         self.assertEqual(process_range(source, dest), expected)
 
     def test_main(self):
