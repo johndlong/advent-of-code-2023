@@ -1,10 +1,9 @@
-from dataclasses import dataclass
+"""Advent of Code - Day 3 - Part 1"""
 import re
 
 
-def has_gear_number(
-    start: int, end: int, current_line: str, above_line: str, below_line: str
-) -> bool:
+def has_gear_number(start: int, end: int, current_line: str, above_line: str, below_line: str) -> bool:
+    """Returns whether there is a gear number."""
     if start - 1 < 0:
         start = 0
     else:
@@ -24,6 +23,7 @@ def has_gear_number(
 
 
 def get_part_numbers(current_line: str, above_line: str, below_line: str) -> list[int]:
+    """Returns a list of part numbers."""
     retval = []
     matches = re.finditer(r"\d+", current_line)
     for match in matches:
@@ -36,12 +36,13 @@ def get_part_numbers(current_line: str, above_line: str, below_line: str) -> lis
 
 
 def main():
+    """Main entrypoint."""
     above = ""
     current = ""
     below = None
 
     total = 0
-    with open("03/part1.txt") as f:
+    with open("03/part1.txt", encoding="utf-8") as f:
         data = f.read()
 
     lines = data.splitlines()

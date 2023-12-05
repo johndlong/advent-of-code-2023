@@ -1,10 +1,10 @@
+# pylint: skip-file
 import re
 
 
 def gear_ratios(current_line: str, above_line: str, below_line: str) -> list[int]:
     retval = []
-    matches = re.finditer(r"\*", current_line)
-    if matches:
+    if matches := re.finditer(r"\*", current_line):
         for match in matches:
             start = match.start()
             end = match.end()
@@ -43,7 +43,7 @@ def main():
     below = None
 
     total = 0
-    with open("03/part2.txt") as f:
+    with open("03/part2.txt", encoding="utf-8") as f:
         data = f.read()
 
     lines = data.splitlines()

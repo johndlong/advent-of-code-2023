@@ -1,3 +1,4 @@
+"""Advent of Code - Day 5."""
 from __future__ import annotations
 from typing import Optional
 from dataclasses import dataclass
@@ -7,13 +8,18 @@ import sys
 
 @dataclass
 class Range:
+    """Specifies an object that tracks the overlapping window and before/after windows."""
+
     within: tuple[int, int]
     before: Optional[tuple[int, int]] = None
     after: Optional[tuple[int, int]] = None
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class Almanac:
+    """Tracks the Almanac as read from the data file."""
+
     seeds: list[tuple(int, int)]
     seed_to_soil: list[tuple[(int, int, int)]]
     soil_to_fertilizer: list[tuple[(int, int, int)]]
@@ -25,6 +31,7 @@ class Almanac:
 
     @classmethod
     def process_input(cls, path: str, seed_range: bool) -> Almanac:
+        """Returns an Almanac object based on the datafile."""
         retval = Almanac(
             seeds=[],
             seed_to_soil=[],
@@ -35,7 +42,8 @@ class Almanac:
             temp_to_humidity=[],
             humidity_to_location=[],
         )
-        with open(path) as f:
+        # pylint: disable=duplicate-code
+        with open(path, encoding="utf-8") as f:
             data = f.read()
 
         lines = data.splitlines()
@@ -73,6 +81,7 @@ class Almanac:
         return retval
 
     def closest_location(self) -> int:
+        """Returns the closest location based on the Almanac values."""
         closest_location = sys.maxsize
         attr_order = [
             "seed_to_soil",
@@ -85,12 +94,10 @@ class Almanac:
         ]
 
         for seed_data in self.seeds:
-            seed = seed_data[0]
-            seed_range = seed_data[1]
             locations = [seed_data]
             for attr in attr_order:
                 mapping = getattr(self, attr)
-                locations = get_map_value(mapping, locations)
+                locations = get_window_values(mapping, locations)
 
                 for location in locations:
                     if location[1] < 0:
@@ -125,6 +132,7 @@ def _process_map(lines: str, key: str) -> list[tuple[(int, int, int)]]:
 
 
 def process_range(source: tuple(int, int), window: tuple(int, int)) -> Optional[Range]:
+    """Returns whether there are any ranges that overlap (and any before/afters)."""
     source_start = source[0]
     source_range = source[1]
     source_end = source_start + source_range - 1
@@ -155,34 +163,29 @@ def process_range(source: tuple(int, int), window: tuple(int, int)) -> Optional[
     if window_end < source_end:
         after_range = (window_end + 1, source_end - window_end)
 
-    return Range(
-        within=(within_start, within_range), before=before_range, after=after_range
-    )
+    return Range(within=(within_start, within_range), before=before_range, after=after_range)
 
 
-def get_map_value(
-    map: list[tuple(int, int, int)], values: list[tuple(int, int)]
-) -> tuple(int, int):
+def get_window_values(windows: list[tuple(int, int, int)], values: list[tuple(int, int)]) -> list[tuple(int, int)]:
+    """Returns a list of tuples with start/range values."""
     retval = []
     for value in values:
         seed_start = value[0]
         seed_range = value[1]
 
-        for window in map:
+        for window in windows:
             window_start = window[0]
             dest = window[1]
             window_range = window[2]
 
-            processed_range = process_range(
-                (seed_start, seed_range), (window_start, window_range)
-            )
+            processed_range = process_range((seed_start, seed_range), (window_start, window_range))
             if processed_range:
                 shift = abs(processed_range.within[0] - window_start)
                 retval.append((dest + shift, processed_range.within[1]))
                 if processed_range.before:
-                    retval.extend(get_map_value(map, [processed_range.before]))
+                    retval.extend(get_window_values(windows, [processed_range.before]))
                 if processed_range.after:
-                    retval.extend(get_map_value(map, [processed_range.after]))
+                    retval.extend(get_window_values(windows, [processed_range.after]))
                 break
         else:
             retval.append((seed_start, seed_range))
@@ -191,6 +194,7 @@ def get_map_value(
 
 
 def main(path: str):
+    """Main entrypoint."""
     part1_almanac = Almanac.process_input(path, seed_range=False)
     part1_solution = part1_almanac.closest_location()
     print(f"Part1: {part1_solution}")
