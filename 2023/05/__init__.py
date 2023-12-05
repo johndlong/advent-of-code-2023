@@ -1,1 +1,1 @@
-from part1 import main
+from main import main
