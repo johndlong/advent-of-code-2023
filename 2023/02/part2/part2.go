@@ -2,13 +2,17 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 )
+
+var ErrUnsupportedColor = errors.New("unsupported color")
 
 type roll struct {
 	blue  int
@@ -28,20 +32,20 @@ func processLine(line string) (game, error) {
 
 	gameNumInt, err := strconv.Atoi(gameMatch[1])
 	if err != nil {
-		return game{}, err
+		return game{}, fmt.Errorf("%w: failed converting game ID to int: %s", err, gameSeparators[0])
 	}
 
 	rollSeparators := strings.Split(gameSeparators[1], ";")
 	resultRegexp := regexp.MustCompile(`(\d+) (blue|red|green)`)
 	gameRolls := []roll{}
 	for _, rollStr := range rollSeparators {
-		gameRoll := roll{}
+		gameRoll := roll{red: 0, green: 0, blue: 0}
 		resultSeparators := strings.Split(rollStr, ",")
 		for _, result := range resultSeparators {
 			resultMatch := resultRegexp.FindStringSubmatch(result)
 			resultNumInt, err := strconv.Atoi(resultMatch[1])
 			if err != nil {
-				return game{}, err
+				return game{}, fmt.Errorf("%w: failed converting roll to int: %s", err, resultMatch[1])
 			}
 			switch color := resultMatch[2]; color {
 			case "blue":
@@ -51,7 +55,7 @@ func processLine(line string) (game, error) {
 			case "green":
 				gameRoll.green = resultNumInt
 			default:
-				return game{}, fmt.Errorf("unexpected color: %s", color)
+				return game{}, fmt.Errorf("%w: %s", ErrUnsupportedColor, color)
 			}
 		}
 		gameRolls = append(gameRolls, gameRoll)
@@ -77,6 +81,7 @@ func fewestCubesPower(gameTest game) int {
 			maximumRoll.blue = max(maximumRoll.blue, roll.blue)
 		}
 	}
+
 	return maximumRoll.red * maximumRoll.green * maximumRoll.blue
 }
 
@@ -92,13 +97,15 @@ func main() {
 	for scanner.Scan() {
 		game, err := processLine(scanner.Text())
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			runtime.Goexit()
 		}
 		games = append(games, game)
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		runtime.Goexit()
 	}
 
 	total := 0
@@ -106,5 +113,5 @@ func main() {
 		total += fewestCubesPower(game)
 	}
 
-	fmt.Printf("Result: %d", total)
+	log.Printf("Result: %d", total)
 }

@@ -3,22 +3,18 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/johndlong/advent-of-code/2023/04/common"
 )
 
-func processCards(cards []common.Card) (int, error) {
+func processCards(cards []common.Card) int {
+	index := 0
 	totals := []int{}
 	for i := 1; i <= len(cards); i++ {
 		totals = append(totals, 1)
 	}
-	index := 0
-	for {
-		if index >= len(cards) {
-			break
-		}
+	for index < len(cards) {
 		card := cards[index]
 		winningTotal := card.WinningTotal()
 
@@ -34,7 +30,8 @@ func processCards(cards []common.Card) (int, error) {
 	for _, count := range totals {
 		total += count
 	}
-	return total, nil
+
+	return total
 }
 
 func main() {
@@ -43,10 +40,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	total, err := processCards(cards)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Result: %d", total)
+	total := processCards(cards)
+	log.Printf("Result: %d", total)
 }
