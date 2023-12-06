@@ -12,3 +12,4 @@ linters-settings:
         allow:
           - $gostd
           - github.com/johndlong/advent-of-code/2023/04/common
+          - github.com/johndlong/advent-of-code/2023/06/common
