@@ -25,8 +25,8 @@ func (r *Race) NumberWinningOptions() int {
 	return results[1] - results[0] + 1
 }
 
-func (r *Race) binarySearch() []int {
-	upperLowerBounds := []int{}
+func (r *Race) binarySearch() [2]int {
+	bounds := [2]int{0, 0}
 	startIndex := 0
 	endIndex := r.Duration
 	// Find the lower bounds
@@ -45,7 +45,7 @@ func (r *Race) binarySearch() []int {
 		}
 	}
 	// save the lower bounds
-	upperLowerBounds = append(upperLowerBounds, startIndex)
+	bounds[0] = startIndex
 
 	// find the upper bounds
 	endIndex = r.Duration
@@ -62,9 +62,9 @@ func (r *Race) binarySearch() []int {
 			startIndex = mid
 		}
 	}
-	upperLowerBounds = append(upperLowerBounds, endIndex)
+	bounds[1] = endIndex
 
-	return upperLowerBounds
+	return bounds
 }
 
 func DoesChargeBeatRecord(chargeTime int, duration int, record int) bool {
