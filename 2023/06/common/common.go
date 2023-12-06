@@ -37,7 +37,7 @@ func DoesChargeBeatRecord(chargeTime int, duration int, record int) bool {
 	return distance > record
 }
 
-func ProcessLines(path string) ([]Race, error) {
+func ProcessLines(path string, ignoreWhitespace bool) ([]Race, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -55,26 +55,16 @@ func ProcessLines(path string) ([]Race, error) {
 		return races, fmt.Errorf("%w", errIncorrectDataFile)
 	}
 
-	times := []int{}
-	records := []int{}
-
 	valueRegexp := regexp.MustCompile(`(\d+)`)
 	timesMatch := valueRegexp.FindAllStringSubmatch(lines[0], -1)
-	for _, timeStr := range timesMatch {
-		time, err := strconv.Atoi(timeStr[0])
-		if err != nil {
-			return races, fmt.Errorf("failed convert: %w", err)
-		}
-		times = append(times, time)
+	times, err := processValues(timesMatch, ignoreWhitespace)
+	if err != nil {
+		return races, fmt.Errorf("failed convert: %w", err)
 	}
-
 	recordsMatch := valueRegexp.FindAllStringSubmatch(lines[1], -1)
-	for _, recordStr := range recordsMatch {
-		record, err := strconv.Atoi(recordStr[0])
-		if err != nil {
-			return races, fmt.Errorf("failed convert: %w", err)
-		}
-		records = append(records, record)
+	records, err := processValues(recordsMatch, ignoreWhitespace)
+	if err != nil {
+		return races, fmt.Errorf("failed convert: %w", err)
 	}
 
 	for i := range times {
@@ -86,4 +76,29 @@ func ProcessLines(path string) ([]Race, error) {
 	}
 
 	return races, nil
+}
+
+func processValues(valuesMatch [][]string, ignoreWhitespace bool) ([]int, error) {
+	retval := []int{}
+	valueStr := []string{}
+	if ignoreWhitespace {
+		valueStr = append(valueStr, "")
+	}
+	for _, value := range valuesMatch {
+		if ignoreWhitespace {
+			valueStr[0] += value[0]
+		} else {
+			valueStr = append(valueStr, value[0])
+		}
+	}
+
+	for _, value := range valueStr {
+		result, err := strconv.Atoi(value)
+		if err != nil {
+			return retval, fmt.Errorf("failed convert: %w", err)
+		}
+		retval = append(retval, result)
+	}
+
+	return retval, nil
 }

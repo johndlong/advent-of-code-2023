@@ -6,9 +6,9 @@ import (
 	"github.com/johndlong/advent-of-code/2023/06/common"
 )
 
-func TestProcessLines(t *testing.T) {
+func TestProcessLinesWithWhitespace(t *testing.T) {
 	t.Parallel()
-	races, err := common.ProcessLines("testdata/data.txt")
+	races, err := common.ProcessLines("testdata/data.txt", false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestDoesChargeBeatRecord(t *testing.T) {
 
 func TestNumberWinningOptions(t *testing.T) {
 	t.Parallel()
-	races, err := common.ProcessLines("testdata/data.txt")
+	races, err := common.ProcessLines("testdata/data.txt", false)
 	if err != nil {
 		t.Fatal(err)
 	}
