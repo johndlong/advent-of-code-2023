@@ -20,11 +20,12 @@ type Race struct {
 }
 
 func (r *Race) NumberWinningOptions() int {
-	results := r.binary_search()
+	results := r.binarySearch()
+
 	return results[1] - results[0] + 1
 }
 
-func (r *Race) binary_search() []int {
+func (r *Race) binarySearch() []int {
 	upperLowerBounds := []int{}
 	startIndex := 0
 	endIndex := r.Duration
@@ -34,6 +35,7 @@ func (r *Race) binary_search() []int {
 			break
 		}
 
+		//nolint:gomnd
 		mid := (startIndex + endIndex) / 2
 		midWins := DoesChargeBeatRecord(mid, r.Duration, r.Record)
 		if midWins {
@@ -52,6 +54,7 @@ func (r *Race) binary_search() []int {
 			break
 		}
 
+		//nolint:gomnd
 		mid := (startIndex+endIndex)/2 + 1
 		if !DoesChargeBeatRecord(mid, r.Duration, r.Record) {
 			endIndex = mid - 1
