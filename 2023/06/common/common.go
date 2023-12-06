@@ -20,14 +20,51 @@ type Race struct {
 }
 
 func (r *Race) NumberWinningOptions() int {
-	total := 0
-	for i := 0; i < r.Duration; i++ {
-		if DoesChargeBeatRecord(i, r.Duration, r.Record) {
-			total++
+	results := r.binarySearch()
+
+	return results[1] - results[0] + 1
+}
+
+func (r *Race) binarySearch() []int {
+	upperLowerBounds := []int{}
+	startIndex := 0
+	endIndex := r.Duration
+	// Find the lower bounds
+	for {
+		if startIndex >= endIndex {
+			break
+		}
+
+		//nolint:gomnd
+		mid := (startIndex + endIndex) / 2
+		midWins := DoesChargeBeatRecord(mid, r.Duration, r.Record)
+		if midWins {
+			endIndex = mid
+		} else {
+			startIndex = mid + 1
 		}
 	}
+	// save the lower bounds
+	upperLowerBounds = append(upperLowerBounds, startIndex)
 
-	return total
+	// find the upper bounds
+	endIndex = r.Duration
+	for {
+		if startIndex >= endIndex {
+			break
+		}
+
+		//nolint:gomnd
+		mid := (startIndex+endIndex)/2 + 1
+		if !DoesChargeBeatRecord(mid, r.Duration, r.Record) {
+			endIndex = mid - 1
+		} else {
+			startIndex = mid
+		}
+	}
+	upperLowerBounds = append(upperLowerBounds, endIndex)
+
+	return upperLowerBounds
 }
 
 func DoesChargeBeatRecord(chargeTime int, duration int, record int) bool {
