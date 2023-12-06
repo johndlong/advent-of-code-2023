@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/johndlong/advent-of-code/2023/06/common"
@@ -17,9 +16,10 @@ func part1(path string) int {
 	for _, race := range races {
 		total *= race.NumberWinningOptions()
 	}
+
 	return total
 }
 
 func main() {
-	fmt.Printf("Result: %d", part1("part1.txt"))
+	log.Printf("Result: %d", part1("part1.txt"))
 }

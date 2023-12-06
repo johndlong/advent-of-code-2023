@@ -2,12 +2,17 @@ package common
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"strconv"
 )
+
+const expectedLines = 2
+
+var errIncorrectDataFile = errors.New("incorrect datafile")
 
 type Race struct {
 	Duration int
@@ -21,12 +26,14 @@ func (r *Race) NumberWinningOptions() int {
 			total++
 		}
 	}
+
 	return total
 }
 
 func DoesChargeBeatRecord(chargeTime int, duration int, record int) bool {
 	runTime := duration - chargeTime
 	distance := chargeTime * runTime
+
 	return distance > record
 }
 
@@ -44,8 +51,8 @@ func ProcessLines(path string) ([]Race, error) {
 	}
 
 	races := []Race{}
-	if len(lines) != 2 {
-		return races, fmt.Errorf("incorrect datafile")
+	if len(lines) != expectedLines {
+		return races, fmt.Errorf("%w", errIncorrectDataFile)
 	}
 
 	times := []int{}
@@ -56,7 +63,7 @@ func ProcessLines(path string) ([]Race, error) {
 	for _, timeStr := range timesMatch {
 		time, err := strconv.Atoi(timeStr[0])
 		if err != nil {
-			return races, err
+			return races, fmt.Errorf("failed convert: %w", err)
 		}
 		times = append(times, time)
 	}
@@ -65,7 +72,7 @@ func ProcessLines(path string) ([]Race, error) {
 	for _, recordStr := range recordsMatch {
 		record, err := strconv.Atoi(recordStr[0])
 		if err != nil {
-			return races, err
+			return races, fmt.Errorf("failed convert: %w", err)
 		}
 		records = append(records, record)
 	}

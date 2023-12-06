@@ -7,6 +7,7 @@ import (
 )
 
 func TestProcessLines(t *testing.T) {
+	t.Parallel()
 	races, err := common.ProcessLines("testdata/data.txt")
 	if err != nil {
 		t.Fatal(err)
@@ -20,6 +21,7 @@ func TestProcessLines(t *testing.T) {
 }
 
 func TestDoesChargeBeatRecord(t *testing.T) {
+	t.Parallel()
 	type testDataInfo struct {
 		chargeTime     int
 		raceTime       int
@@ -47,6 +49,7 @@ func TestDoesChargeBeatRecord(t *testing.T) {
 }
 
 func TestNumberWinningOptions(t *testing.T) {
+	t.Parallel()
 	races, err := common.ProcessLines("testdata/data.txt")
 	if err != nil {
 		t.Fatal(err)
@@ -61,6 +64,7 @@ func TestNumberWinningOptions(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
+	t.Parallel()
 	result := part1("testdata/data.txt")
 	if result != 288 {
 		t.Fatalf("expected %d; got %d", 288, result)
