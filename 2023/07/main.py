@@ -2,11 +2,11 @@
 from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
-from enum import Enum
+from enum import IntEnum
 import re
 
 
-class FaceCard(Enum):
+class FaceCard(IntEnum):
     """Defines the values of Face Cards."""
 
     A = 14
@@ -20,7 +20,7 @@ class FaceCard(Enum):
 face_card_names = {x.name for x in FaceCard}
 
 
-class HandRank(Enum):
+class HandRank(IntEnum):
     """Defines the values of Hand Rankings"""
 
     FIVE_OF_A_KIND = 7
@@ -43,11 +43,11 @@ class Card:
         """Returns a Card object based on the string."""
         if data == "J":
             if joker:
-                return Card(value=FaceCard.JOKER.value)
-            return Card(value=FaceCard.JACK.value)
+                return Card(value=FaceCard.JOKER)
+            return Card(value=FaceCard.JACK)
 
         if data in face_card_names:
-            return Card(value=FaceCard[data].value)
+            return Card(value=FaceCard[data])
         return Card(value=int(data))
 
 
@@ -63,11 +63,11 @@ class Hand:
         """Calculates the rank of the provided hand based with support for jokers."""
         hand_set = Counter([x.value for x in self.cards])
 
-        if num_jokers := hand_set[FaceCard.JOKER.value]:
-            del hand_set[FaceCard.JOKER.value]
+        if num_jokers := hand_set[FaceCard.JOKER]:
+            del hand_set[FaceCard.JOKER]
             # If you have 5 jokers, then convert them to all Aces.
             if num_jokers == 5:
-                hand_set[FaceCard.A.value] = num_jokers
+                hand_set[FaceCard.A] = num_jokers
             # Otherwise, add the number of jokers to the current most common card
             # to maximize the hand rank
             else:
@@ -106,7 +106,7 @@ class Hand:
                 if val == other.cards[i]:
                     continue
                 return val.value < other.cards[i].value
-        return self.rank().value < other.rank().value
+        return self.rank() < other.rank()
 
     @classmethod
     def read_file(cls, path: str, joker: bool = False) -> list[Hand]:
