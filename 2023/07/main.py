@@ -12,8 +12,9 @@ class FaceCard(Enum):
     A = 14
     K = 13
     Q = 12
-    J = 11
+    JACK = 11
     T = 10
+    JOKER = 1
 
 
 face_card_names = {x.name for x in FaceCard}
@@ -38,8 +39,13 @@ class Card:
     value: int
 
     @classmethod
-    def to_card(cls, data: str) -> Card:
+    def to_card(cls, data: str, joker: bool = False) -> Card:
         """Returns a Card object based on the string."""
+        if data == "J":
+            if joker:
+                return Card(value=FaceCard.JOKER.value)
+            return Card(value=FaceCard.JACK.value)
+
         if data in face_card_names:
             return Card(value=FaceCard[data].value)
         return Card(value=int(data))
@@ -54,8 +60,25 @@ class Hand:
 
     # pylint: disable=too-many-return-statements
     def rank(self) -> HandRank:
-        """Calculates the rank of the provided hand."""
+        """Calculates the rank of the provided hand based with support for jokers."""
         hand_set = Counter([x.value for x in self.cards])
+
+        if num_jokers := hand_set[FaceCard.JOKER.value]:
+            del hand_set[FaceCard.JOKER.value]
+            # If you have 5 jokers, then convert them to all Aces.
+            if num_jokers == 5:
+                hand_set[FaceCard.A.value] = num_jokers
+            # Otherwise, add the number of jokers to the current most common card
+            # to maximize the hand rank
+            else:
+                most_common = hand_set.most_common(1)[0]
+                hand_set[most_common[0]] += num_jokers
+
+        return self.legacy_rank(hand_set)
+
+    # pylint: disable=too-many-return-statements
+    def legacy_rank(self, hand_set: Counter) -> HandRank:
+        """Calculates the rank of the provided hand based on non-joker support."""
         length = len(hand_set)
         if length == 1:
             return HandRank.FIVE_OF_A_KIND
@@ -86,7 +109,7 @@ class Hand:
         return self.rank().value < other.rank().value
 
     @classmethod
-    def read_file(cls, path: str) -> list[Hand]:
+    def read_file(cls, path: str, joker: bool = False) -> list[Hand]:
         """Returns a list of hands after reading the provided file"""
         with open(path, encoding="utf-8") as f:
             data = f.read()
@@ -95,7 +118,7 @@ class Hand:
         regex = re.compile(r"^(.*)\s+(\d+)$")
         for line in data.splitlines():
             if result := regex.match(line):
-                hand = Hand(cards=[Card.to_card(c) for c in result.group(1)], bid=int(result.group(2)))
+                hand = Hand(cards=[Card.to_card(c, joker=joker) for c in result.group(1)], bid=int(result.group(2)))
                 retval.append(hand)
             else:
                 raise ValueError(f"failed reading line: {line}")
@@ -103,7 +126,7 @@ class Hand:
         return retval
 
 
-def part1(hands: list[Hand]) -> int:
+def winning_total(hands: list[Hand]) -> int:
     """Part 1 calculator."""
     ranked_hands = sorted(hands)
     retval = 0
@@ -114,8 +137,11 @@ def part1(hands: list[Hand]) -> int:
 
 def main():
     """Main entrypoint."""
-    result = part1(Hand.read_file("2023/07/data.txt"))
-    print(f"Part1: {result}")
+    part1 = winning_total(Hand.read_file("2023/07/data.txt"))
+    print(f"Part1: {part1}")
+
+    part2 = winning_total(Hand.read_file("2023/07/data.txt", joker=True))
+    print(f"Part2: {part2}")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # pylint: skip-file
 import unittest
-from main import Card, Hand, HandRank, part1
+from main import Card, Hand, HandRank, winning_total
 
 
 class TestDay7(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestDay7(unittest.TestCase):
 
     def test_part1(self):
         hands = Hand.read_file("2023/07/testdata/data.txt")
-        self.assertEqual(part1(hands), 6440)
+        self.assertEqual(winning_total(hands), 6440)
 
 
 if __name__ == "__main__":
