@@ -1,5 +1,5 @@
 """Advent of Code - Day 1 - Part 1"""
-
+import argparse
 import re
 
 
@@ -29,7 +29,10 @@ def get_sum(data: str) -> int:
 def main():
     """Main entrypoint."""
     # pylint: disable=duplicate-code
-    with open("01/part1.txt", encoding="utf-8") as f:
+    parser = argparse.ArgumentParser(prog="day1_part1")
+    parser.add_argument("-f", "--filename", required=True)
+    args = parser.parse_args()
+    with open(args.filename, encoding="utf-8") as f:
         data = f.read()
     retval = get_sum(data)
     print(retval)

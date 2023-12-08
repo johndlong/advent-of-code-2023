@@ -36,13 +36,11 @@ So, 33332 and 2AAAA are both four of a kind hands, but 33332 is stronger because
 
 To play Camel Cards, you are given a list of hands and their corresponding bid (your puzzle input). For example:
 
-```
 32T3K 765
 T55J5 684
 KK677 28
 KTJJT 220
 QQQJA 483
-```
 
 This example shows five hands; each hand is followed by its bid amount. Each hand wins an amount equal to its bid multiplied by its rank, where the weakest hand gets rank 1, the second-weakest hand gets rank 2, and so on up to the strongest hand. Because there are five hands in this example, the strongest hand will have rank 5 and its bid will be multiplied by 5.
 

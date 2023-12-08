@@ -3,6 +3,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/johndlong/advent-of-code/2023/04/common"
@@ -35,7 +36,14 @@ func processCards(cards []common.Card) int {
 }
 
 func main() {
-	cards, err := common.ProcessLines("part2.txt")
+	var inputFlag string
+	flag.StringVar(&inputFlag, "filename", "", "input data set")
+	flag.Parse()
+
+	if inputFlag == "" {
+		panic("file not provided (--filename <path>)")
+	}
+	cards, err := common.ProcessLines(inputFlag)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,5 +1,6 @@
 """Advent of Code - Day 5."""
 from __future__ import annotations
+import argparse
 from typing import Optional
 from dataclasses import dataclass
 import re
@@ -205,4 +206,7 @@ def main(path: str):
 
 
 if __name__ == "__main__":
-    main("2023/05/data.txt")
+    parser = argparse.ArgumentParser(prog="day5")
+    parser.add_argument("-f", "--filename", required=True)
+    args = parser.parse_args()
+    main(args.filename)
