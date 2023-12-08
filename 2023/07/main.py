@@ -1,5 +1,6 @@
 """ Day 7: Camel Cards s"""
 from __future__ import annotations
+import argparse
 from collections import Counter
 from dataclasses import dataclass
 from enum import IntEnum
@@ -137,10 +138,14 @@ def winning_total(hands: list[Hand]) -> int:
 
 def main():
     """Main entrypoint."""
-    part1 = winning_total(Hand.read_file("2023/07/data.txt"))
+    parser = argparse.ArgumentParser(prog="day7")
+    parser.add_argument("-f", "--filename", required=True)
+    args = parser.parse_args()
+
+    part1 = winning_total(Hand.read_file(args.filename))
     print(f"Part1: {part1}")
 
-    part2 = winning_total(Hand.read_file("2023/07/data.txt", joker=True))
+    part2 = winning_total(Hand.read_file(args.filename, joker=True))
     print(f"Part2: {part2}")
 
 

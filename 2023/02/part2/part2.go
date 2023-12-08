@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -86,7 +87,15 @@ func fewestCubesPower(gameTest game) int {
 }
 
 func main() {
-	file, err := os.Open("part2.txt")
+	var inputFlag string
+	flag.StringVar(&inputFlag, "filename", "", "input data set")
+	flag.Parse()
+
+	if inputFlag == "" {
+		panic("file not provided (--filename <path>)")
+	}
+
+	file, err := os.Open(inputFlag)
 	if err != nil {
 		log.Fatal(err)
 	}

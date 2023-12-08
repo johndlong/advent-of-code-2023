@@ -1,4 +1,5 @@
 """Advent of Code - Day 3 - Part 1"""
+import argparse
 import re
 
 
@@ -37,12 +38,17 @@ def get_part_numbers(current_line: str, above_line: str, below_line: str) -> lis
 
 def main():
     """Main entrypoint."""
+    parser = argparse.ArgumentParser(prog="day3_part1")
+    parser.add_argument("-f", "--filename", required=True)
+    args = parser.parse_args()
+
     above = ""
     current = ""
     below = None
 
     total = 0
-    with open("03/part1.txt", encoding="utf-8") as f:
+
+    with open(args.filename, encoding="utf-8") as f:
         data = f.read()
 
     lines = data.splitlines()

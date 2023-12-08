@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/johndlong/advent-of-code/2023/06/common"
@@ -35,6 +36,13 @@ func part2(path string) int {
 }
 
 func main() {
-	log.Printf("Result: %d", part1("data.txt"))
-	log.Printf("Result: %d", part2("data.txt"))
+	var inputFlag string
+	flag.StringVar(&inputFlag, "filename", "", "input data set")
+	flag.Parse()
+
+	if inputFlag == "" {
+		panic("file not provided (--filename <path>)")
+	}
+	log.Printf("Result: %d", part1(inputFlag))
+	log.Printf("Result: %d", part2(inputFlag))
 }
