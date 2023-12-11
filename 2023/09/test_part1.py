@@ -1,8 +1,8 @@
 import unittest
-from main import read_file, part1, prediction
+from main import read_file, part1, part1_prediction
 
 
-class TestDay8(unittest.TestCase):
+class TestDay8Part2(unittest.TestCase):
     def test_read_file(self):
         sequences = read_file("2023/09/testdata/part1.txt")
         self.assertTrue(len(sequences) == 3)
@@ -20,7 +20,7 @@ class TestDay8(unittest.TestCase):
         for test in testdata:
             values = test[0]
             expected_result = test[1]
-            pred = prediction(values)
+            pred = part1_prediction(values)
             self.assertEqual(pred, expected_result)
 
     def test_part1(self):
