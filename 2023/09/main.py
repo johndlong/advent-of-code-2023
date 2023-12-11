@@ -24,6 +24,7 @@ def read_file(path: str) -> list[list[int]]:
 
 
 def prediction(values: list[int]) -> int:
+    """Returns the prediction value given the set of values."""
     diffs = []
     if len(values) == 0:
         return 0
@@ -34,11 +35,12 @@ def prediction(values: list[int]) -> int:
 
     if set(diffs) == set([0]):
         return values[-1:][0]
-    else:
-        return values[-1:][0] + prediction(diffs)
+
+    return values[-1:][0] + prediction(diffs)
 
 
 def part1(sequences: list[list[int]]) -> int:
+    """Returns the sum of predictions given a sequence of values."""
     total = 0
     for seq in sequences:
         total += prediction(seq)
