@@ -88,16 +88,11 @@ def read_file(path: str) -> Universe:
 
     universe = []
     lines = data.splitlines()
-    y_len = len(lines)
-    x_len = len(lines[0])
-    for y in range(y_len):
+    for y in lines:
         row = []
-        for x in range(x_len):
-            row.append(CosmicEntity.EMPTY)
+        for x in y:
+            row.append(CosmicEntity(x))
         universe.append(row)
-    for y, line in enumerate(lines):
-        for x, pos in enumerate(line):
-            universe[y][x] = CosmicEntity(pos)
 
     return Universe(positions=universe)
 
