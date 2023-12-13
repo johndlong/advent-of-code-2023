@@ -16,7 +16,7 @@ class TestDay11Part1(unittest.TestCase):
         expanded = grid.expand()
         for y, y_row in enumerate(expanded.positions):
             for x, pos in enumerate(y_row):
-                self.assertEqual(pos, expected_expanded.positions[y][x])
+                self.assertEqual(pos.val, expected_expanded.positions[y][x].val)
 
     def test_distances(self):
         testdata = [
