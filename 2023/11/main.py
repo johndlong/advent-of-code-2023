@@ -146,9 +146,9 @@ def main():
     parser = argparse.ArgumentParser(prog="day11")
     parser.add_argument("-f", "--filename", required=True)
     args = parser.parse_args()
-    # universe = read_file(args.filename)
-    # p1 = part1(universe)
-    # print(f"Part 1: {p1}")
+    universe = read_file(args.filename)
+    p1 = part1(universe)
+    print(f"Part 1: {p1}")
 
     universe = read_file(args.filename)
     p2 = part2(universe)
