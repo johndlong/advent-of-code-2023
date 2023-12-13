@@ -10,13 +10,16 @@ class TestDay11Part1(unittest.TestCase):
         self.assertEqual(universe.positions[0][0].val, CosmicEntity.EMPTY)
         self.assertEqual(universe.positions[0][3].val, CosmicEntity.GALAXY)
 
-    # def test_expanded(self):
-    #     grid = read_file("2023/11/testdata/1.txt")
-    #     expected_expanded = read_file("2023/11/testdata/expanded.txt")
-    #     expanded = grid.expand()
-    #     for y, y_row in enumerate(expanded.positions):
-    #         for x, pos in enumerate(y_row):
-    #             self.assertEqual(pos.val, expected_expanded.positions[y][x].val)
+    def test_expanded(self):
+        grid = read_file("2023/11/testdata/1.txt")
+        expected_expanded = read_file("2023/11/testdata/expanded.txt")
+        expanded = grid.expand()
+        for row in expanded.positions:
+            for pos in row:
+                if pos.val == CosmicEntity.GALAXY:
+                    self.assertEqual(pos.val, expected_expanded.positions[pos.y][pos.x].val)
+                    self.assertEqual(pos.x, expected_expanded.positions[pos.y][pos.x].x)
+                    self.assertEqual(pos.y, expected_expanded.positions[pos.y][pos.x].y)
 
     def test_distances(self):
         testdata = [

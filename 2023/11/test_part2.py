@@ -6,13 +6,13 @@ class TestDay11Part2(unittest.TestCase):
     def test_part2_example(self):
         grid = read_file("2023/11/testdata/1.txt")
 
-        e10 = grid.expand(expansion_number=10)
+        e10 = grid.expand(expansion_multiplier=10)
         r10 = e10.shortest_pairs()
         self.assertEqual(r10, 1030)
 
         grid = read_file("2023/11/testdata/1.txt")
 
-        e100 = grid.expand(expansion_number=100)
+        e100 = grid.expand(expansion_multiplier=100)
         r100 = e100.shortest_pairs()
         self.assertEqual(r100, 8410)
 

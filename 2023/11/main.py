@@ -32,23 +32,21 @@ class Universe:
 
     positions: list[list[Position]] = None
 
-    def expand(self, expansion_number: int = 1) -> Universe:
+    def expand(self, expansion_multiplier: int = 2) -> Universe:
         """Returns an expanded copy of the universe"""
         # Expand any empty rows of the universe
         new_universe = []
-        columns = 0
         expand_rows = []
         for y_pos, y in enumerate(self.positions):
-            columns = len(y)
             new_universe.append(y)
-            x_set = set([x.val for x in y])
+            x_set = {x.val for x in y}
             # if the row is entirely empty, add an additional empty row.
             if x_set == set([CosmicEntity.EMPTY]):
                 expand_rows.append(y_pos)
 
         # Expand any empty columns
         expand_columns = []
-        for x in range(columns):
+        for x in range(len(self.positions)):
             y_set = set()
             for y, _ in enumerate(self.positions):
                 y_set.add(self.positions[y][x].val)
@@ -57,25 +55,25 @@ class Universe:
                 expand_columns.append(x)
 
         print("Starting Expansion.")
-        expands = max(1, expansion_number - 1)
 
         # Perform expansion...
         progress = ProgressBar(maxval=len(expand_columns) + len(expand_rows)).start()
         count = 0
-        for i, x in enumerate(expand_columns, 1):
+        expand_columns.reverse()
+        expand_rows.reverse()
+        for x in expand_columns:
             progress.update(count + 1)
             count += 1
             for n in range(x, len(self.positions[0])):
                 for y in range(len(self.positions)):
-                    # # As we expand the columns, we need to consider the additional ones added
-                    # # by previous inserts (hence adding i)
-                    new_universe[y][n].x += expands * i
-                    # new_universe[y] = new_universe[y][:x] + [Position(CosmicEntity.EMPTY] * expands + new_universe[y][x:]
-        for i, y_expand in enumerate(expand_rows, 1):
+                    # Expand the universe by changing the x values of the entries.
+                    new_universe[y][n].x += expansion_multiplier - 1
+        for y_expand in expand_rows:
             progress.update(count + 1)
             count += 1
-            for x, _ in enumerate(new_universe[y_expand]):
-                new_universe[y_expand][x].y += expands * i
+            for y in range(y_expand, len(self.positions)):
+                for x in range(len(self.positions[0])):
+                    new_universe[y][x].y += expansion_multiplier - 1
 
         progress.finish()
 
@@ -139,7 +137,7 @@ def part1(universe: Universe) -> int:
 
 def part2(universe: Universe) -> int:
     """Returns the part2 answer."""
-    expanded = universe.expand(expansion_number=1000000)
+    expanded = universe.expand(expansion_multiplier=1000000)
     return expanded.shortest_pairs()
 
 
@@ -148,9 +146,9 @@ def main():
     parser = argparse.ArgumentParser(prog="day11")
     parser.add_argument("-f", "--filename", required=True)
     args = parser.parse_args()
-    universe = read_file(args.filename)
-    p1 = part1(universe)
-    print(f"Part 1: {p1}")
+    # universe = read_file(args.filename)
+    # p1 = part1(universe)
+    # print(f"Part 1: {p1}")
 
     universe = read_file(args.filename)
     p2 = part2(universe)
