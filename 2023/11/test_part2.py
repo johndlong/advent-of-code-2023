@@ -10,6 +10,8 @@ class TestDay11Part2(unittest.TestCase):
         r10 = e10.shortest_pairs()
         self.assertEqual(r10, 1030)
 
+        grid = read_file("2023/11/testdata/1.txt")
+
         e100 = grid.expand(expansion_number=100)
         r100 = e100.shortest_pairs()
         self.assertEqual(r100, 8410)

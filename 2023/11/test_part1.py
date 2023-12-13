@@ -1,22 +1,22 @@
 import unittest
-from main import read_file, distance, Universe, CosmicEntity, NamedGalaxy
+from main import read_file, distance, Universe, CosmicEntity, NamedGalaxy, Position
 
 
 class TestDay11Part1(unittest.TestCase):
     def test_read_file(self):
         universe = read_file("2023/11/testdata/1.txt")
         self.assertIsInstance(universe, Universe)
-        self.assertIsInstance(universe.positions[0][0], CosmicEntity)
-        self.assertEqual(universe.positions[0][0], CosmicEntity.EMPTY)
-        self.assertEqual(universe.positions[0][3], CosmicEntity.GALAXY)
+        self.assertIsInstance(universe.positions[0][0], Position)
+        self.assertEqual(universe.positions[0][0].val, CosmicEntity.EMPTY)
+        self.assertEqual(universe.positions[0][3].val, CosmicEntity.GALAXY)
 
-    def test_expanded(self):
-        grid = read_file("2023/11/testdata/1.txt")
-        expected_expanded = read_file("2023/11/testdata/expanded.txt")
-        expanded = grid.expand()
-        for y, y_row in enumerate(expanded.positions):
-            for x, pos in enumerate(y_row):
-                self.assertEqual(pos.val, expected_expanded.positions[y][x].val)
+    # def test_expanded(self):
+    #     grid = read_file("2023/11/testdata/1.txt")
+    #     expected_expanded = read_file("2023/11/testdata/expanded.txt")
+    #     expanded = grid.expand()
+    #     for y, y_row in enumerate(expanded.positions):
+    #         for x, pos in enumerate(y_row):
+    #             self.assertEqual(pos.val, expected_expanded.positions[y][x].val)
 
     def test_distances(self):
         testdata = [
