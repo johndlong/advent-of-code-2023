@@ -1,9 +1,10 @@
 """Day 11: Cosmic Expansion"""
 from __future__ import annotations
+import argparse
 from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum
-import argparse
+from progressbar import ProgressBar
 
 
 class CosmicEntity(Enum):
@@ -17,43 +18,64 @@ NamedGalaxy = namedtuple("NamedGalaxy", ["num", "x", "y"])
 
 
 @dataclass
+class Position:
+    """Defines a Position in the Galaxy"""
+
+    val: CosmicEntity
+    x: int
+    y: int
+
+
+@dataclass
 class Universe:
     """Defines the universe"""
 
-    positions: list[list[CosmicEntity]] = None
+    positions: list[list[Position]] = None
 
-    def expand(self) -> Universe:
+    def expand(self, expansion_multiplier: int = 2) -> Universe:
         """Returns an expanded copy of the universe"""
         # Expand any empty rows of the universe
         new_universe = []
-        columns = 0
         expand_rows = []
         for y_pos, y in enumerate(self.positions):
-            columns = len(y)
             new_universe.append(y)
-            x_set = set(y)
+            x_set = {x.val for x in y}
             # if the row is entirely empty, add an additional empty row.
             if x_set == set([CosmicEntity.EMPTY]):
                 expand_rows.append(y_pos)
 
         # Expand any empty columns
         expand_columns = []
-        for x in range(columns):
+        for x in range(len(self.positions)):
             y_set = set()
             for y, _ in enumerate(self.positions):
-                y_set.add(self.positions[y][x])
+                y_set.add(self.positions[y][x].val)
             # Add a new empty column if we have an entirely empty column
             if y_set == set([CosmicEntity.EMPTY]):
                 expand_columns.append(x)
 
+        print("Starting Expansion.")
+
         # Perform expansion...
-        for i, x in enumerate(expand_columns):
-            for y in range(len(self.positions)):
-                # As we expand the columns, we need to consider the additional ones added
-                # by previous inserts (hence adding i)
-                new_universe[y].insert(x + i, CosmicEntity.EMPTY)
-        for i, y_expand in enumerate(expand_rows):
-            new_universe.insert(y_expand + i, new_universe[y_expand + i])
+        progress = ProgressBar(maxval=len(expand_columns) + len(expand_rows)).start()
+        count = 0
+        expand_columns.reverse()
+        expand_rows.reverse()
+        for x in expand_columns:
+            progress.update(count + 1)
+            count += 1
+            for n in range(x, len(self.positions[0])):
+                for y in range(len(self.positions)):
+                    # Expand the universe by changing the x values of the entries.
+                    new_universe[y][n].x += expansion_multiplier - 1
+        for y_expand in expand_rows:
+            progress.update(count + 1)
+            count += 1
+            for y in range(y_expand, len(self.positions)):
+                for x in range(len(self.positions[0])):
+                    new_universe[y][x].y += expansion_multiplier - 1
+
+        progress.finish()
 
         return Universe(new_universe)
 
@@ -62,15 +84,25 @@ class Universe:
         total = 0
         galaxies = []
         count = 1
-        for y, row in enumerate(self.positions):
-            for x, pos in enumerate(row):
-                if pos == CosmicEntity.GALAXY:
-                    galaxies.append(NamedGalaxy(count, x, y))
-                    count += 1
+        print("Finding galaxies.")
+        row_len = len(self.positions[0])
+        progress = ProgressBar(maxval=(len(self.positions) + 1) * (row_len + 1) + 1).start()
+        p_count = 0
+        for row in self.positions:
+            for pos in row:
+                if pos.val == CosmicEntity.GALAXY:
+                    galaxies.append(NamedGalaxy(count, pos.x, pos.y))
+                p_count += 1
+                progress.update(p_count + 1)
+        progress.finish()
 
+        print("Starting Calculating Shortest Pairs.")
+        progress = ProgressBar(maxval=len(galaxies)).start()
         for i, galaxy1 in enumerate(galaxies, 1):
             for galaxy2 in galaxies[i:]:
                 total += distance(galaxy1, galaxy2)
+                progress.update(i + 1)
+        progress.finish()
 
         return total
 
@@ -88,10 +120,10 @@ def read_file(path: str) -> Universe:
 
     universe = []
     lines = data.splitlines()
-    for y in lines:
+    for y, y_row in enumerate(lines):
         row = []
-        for x in y:
-            row.append(CosmicEntity(x))
+        for x, pos in enumerate(y_row):
+            row.append(Position(val=CosmicEntity(pos), x=x, y=y))
         universe.append(row)
 
     return Universe(positions=universe)
@@ -103,6 +135,12 @@ def part1(universe: Universe) -> int:
     return expanded.shortest_pairs()
 
 
+def part2(universe: Universe) -> int:
+    """Returns the part2 answer."""
+    expanded = universe.expand(expansion_multiplier=1000000)
+    return expanded.shortest_pairs()
+
+
 def main():
     """Main entrypoint."""
     parser = argparse.ArgumentParser(prog="day11")
@@ -111,6 +149,10 @@ def main():
     universe = read_file(args.filename)
     p1 = part1(universe)
     print(f"Part 1: {p1}")
+
+    universe = read_file(args.filename)
+    p2 = part2(universe)
+    print(f"Part 2: {p2}")
 
 
 if __name__ == "__main__":
