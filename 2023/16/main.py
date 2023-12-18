@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from argparse import ArgumentParser
+from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
 
@@ -77,15 +78,9 @@ class Space:
         """Returns the energized count within the grid."""
         return len([x for row in self.grid for x in row if x.energized])
 
-    def light_beam(self):
+    def light_beam(self, initial: tuple[int, int, Direction] = (0, 0, Direction.EAST)):
         """Kicks off a light beam and traverses the grid until all options are exhausted."""
-        positions = [
-            (
-                0,
-                0,
-                Direction.EAST,
-            )
-        ]
+        positions = [initial]
         while True:
             complete = True
             next_positions = []
@@ -145,6 +140,40 @@ def part1(space: Space) -> int:
     return space.energized_count()
 
 
+def part2(space: Space) -> int:
+    """Returns the part 2 answer"""
+    height = len(space.grid)
+    width = len(space.grid[0])
+
+    max_energized = 0
+
+    # Process South (top)
+    for x in range(width):
+        space_2 = deepcopy(space)
+        space_2.light_beam(initial=(x, 0, Direction.SOUTH))
+        max_energized = max(max_energized, space_2.energized_count())
+
+    # Process North (bottom)
+    for x in range(width):
+        space_2 = deepcopy(space)
+        space_2.light_beam(initial=(x, height - 1, Direction.NORTH))
+        max_energized = max(max_energized, space_2.energized_count())
+
+    # Process East (left)
+    for y in range(height):
+        space_2 = deepcopy(space)
+        space_2.light_beam(initial=(0, y, Direction.EAST))
+        max_energized = max(max_energized, space_2.energized_count())
+
+    # Process West (left)
+    for y in range(height):
+        space_2 = deepcopy(space)
+        space_2.light_beam(initial=(width - 1, y, Direction.WEST))
+        max_energized = max(max_energized, space_2.energized_count())
+
+    return max_energized
+
+
 def main():
     """Main entrypoint."""
     parser = ArgumentParser(prog="day16")
@@ -153,6 +182,10 @@ def main():
     space = read_file(args.filename)
     p1 = part1(space)
     print(f"Part1: {p1}")
+
+    space = read_file(args.filename)
+    p2 = part2(space)
+    print(f"Part2: {p2}")
 
 
 if __name__ == "__main__":
